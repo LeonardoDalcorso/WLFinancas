@@ -9,44 +9,32 @@
 		<div class="layout-menu #{guestPreferences.menuClass}">
 			<div class="nano">
 				<div class="nano-content menu-scroll-content">
-					<ui:fragment
-						rendered="#{guestPreferences.profileMode == 'inline' and guestPreferences.menuLayout != 'menu-layout-static menu-layout-horizontal'}">
-						<div class="profile">
-							<p:panel
-								style="background-color: transparent; border-color: transparent;">
-								<div class="profile-image-menu"></div>
-							</p:panel>
-
-							<a id="profile-options" href="#"> <span class="profile-name"><h:outputText
-										value="Leo Safadinha" /></span> <i class="material-icons">&#xE313;</i>
-							</a>
-						</div>
-
-						<ul id="profile-menu" class="ultima-menu">
-							<li role="menuitem"><p:link styleClass="ripplelink">
-									<i class="material-icons">&#xE7FD;</i>
-									<span>Alterar Senha</span>
-								</p:link></li>
-
-							<li role="menuitem"><p:commandLink styleClass="ripplelink">
-									<i class="material-icons">cancel</i>
-									<span>Sair</span>
-								</p:commandLink></li>
-						</ul>
-					</ui:fragment>
+					
 
 					<pu:menu widgetVar="me">
 						<p:menuitem id="inicio" value="Início" icon="&#xE88A;" />
-						<p:submenu label="Cadastros" icon="&#xE8B8;">
-							<p:menuitem id="usuario" value="Usuários" icon="&#xE55A;" />
-
+						
+						<p:submenu label="Relatorios" icon="&#xE8B8;">
+							<p:menuitem id="contas_pagar" value="Contas a pagar" icon="&#xE55A;" />
+							<p:menuitem id="contas_Pagas" value="Contas pagas" icon="&#xE55A;" />
+							<p:menuitem id="empresas_cadastradas" value="Empresas cadastradas" icon="&#xE55A;" />
 						</p:submenu>
 
-						<p:menuitem id="agenda" value="Agenda" icon="event" />
-						<p:menuitem id="consultas" value="Consultas" icon="pageview" />
+						<p:menuitem id="cad_contas" value="Cadastro de Contas" icon="event" />
+						
+						<p:menuitem id="inse_pagamento" value="Inserir Pagamentos" icon="pageview" />
+						
+						<p:menuitem id="cad_usuarios" value="Cadastro Usuarios" icon="pageview" />
+											
 					</pu:menu>
+								
+				   
+	
 				</div>
 			</div>
 		</div>
+		
+		
+		
 	</h:form>
 </ui:composition>

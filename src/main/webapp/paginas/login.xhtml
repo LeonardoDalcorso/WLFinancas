@@ -36,8 +36,8 @@
                     </h:panelGroup>
                 </div>
                 <div class="ui-g-12">
-                    <p:button outcome="/empty" value="Sign In" icon="ui-icon-person" />
-                    <p:button outcome="/empty" value="Forgot Password" icon="ui-icon-help" styleClass="secondary"/>
+                    <p:button  value="Sign In" icon="ui-icon-person" />
+                    <p:button  value="Forgot Password" icon="ui-icon-help" styleClass="secondary"/>
                 </div>
             </div>
         </div>
@@ -45,7 +45,7 @@
         <div class="login-footer">PrimeFaces Ultima</div>
         
         <h:outputStylesheet name="css/ripple.css" library="ultima-layout" />
-        <h:outputStylesheet name="css/layout-teal.css" library="ultima-layout" />
+        <h:outputStylesheet name="css/layout-#{guestPreferences.theme}.css" library="ultima-layout" />
     </h:body>
 
 </html>

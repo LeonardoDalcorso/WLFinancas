@@ -6,34 +6,25 @@ PrimeFaces.widget.Ultima = PrimeFaces.widget.BaseWidget.extend({
     init: function(cfg) {
         this._super(cfg);
         this.wrapper = $(document.body).children('.layout-wrapper');
-        this.topbar = $('body > .layout-wrapper .topbar');
+        this.topbar = $('body > .layout-wrapper > .topbar');
         this.menu = this.jq;
         this.menuWrapper = this.menu.closest('.layout-menu');
         this.menulinks = this.menu.find('a');
         this.expandedMenuitems = this.expandedMenuitems || [];
-        this.rightPanel = this.wrapper.children('.layout-rightpanel');
-        this.layoutMask = this.wrapper.children('.layout-mask');
         this.profileButton = $('#profile-options');
         this.profileMenu = $('#profile-menu');
         this.topbarItems = this.topbar.find('.topbar-items');
         this.topbarLinks = this.topbarItems.find('> li > a');
         this.menuButton = $('#menu-button');
         this.topbarMenuButton = $('#topbar-menu-button');
-        this.rightPanelButton = $('.rightpanel-btn');
         this.menuActive = false;
         this.topbarLinkClick = false;
         this.topbarMenuClick = false;
-        this.menuClick = false;
-        this.menuButtonClick = false;
         this.isMobileDev = this.isMobileDevice();
-        
-        if(this.wrapper.hasClass('layout-menu-slim')) {
-            this.profileButton = $('.profile');
-        }
 
         this._bindEvents();
         
-        if(!this.wrapper.hasClass('menu-layout-horizontal') && !this.wrapper.hasClass('layout-menu-slim')) {
+        if(!this.wrapper.hasClass('menu-layout-horizontal')) {
             this.restoreMenuState();
         }
         
@@ -43,14 +34,9 @@ PrimeFaces.widget.Ultima = PrimeFaces.widget.BaseWidget.extend({
     _bindEvents: function() {
         var $this = this;
         
-        this.menuWrapper.on('click', function(e) {
-            $this.menuClick = true;
-        });
-        
         this.menuButton.off('click.menuButton').on('click.menuButton', function(e) {
             $this.menuButton.toggleClass('menu-button-rotate');
             $this.topbarItems.removeClass('topbar-items-visible');
-            $this.menuButtonClick = true;
             
             //overlay
             if($this.wrapper.hasClass('menu-layout-overlay')) {
@@ -83,10 +69,6 @@ PrimeFaces.widget.Ultima = PrimeFaces.widget.BaseWidget.extend({
                         $this.enableSwipe();
                     }
                 }
-                
-                setTimeout(function() {
-                    $(window).trigger('resize');
-                }, 200);  
             }
             
             e.preventDefault();
@@ -95,7 +77,12 @@ PrimeFaces.widget.Ultima = PrimeFaces.widget.BaseWidget.extend({
         this.topbarMenuButton.off('click.topbarButton').on('click.topbarButton', function(e) {
             $this.topbarMenuClick = true;
             $this.topbarItems.find('ul').removeClass('fadeInDown fadeOutUp');
-            $this.closeOverlayMenu();
+            
+            if($this.wrapper.hasClass('layout-menu-overlay-active')||$this.wrapper.hasClass('layout-menu-static-active')) {
+                $this.menuButton.removeClass('menu-button-rotate');
+                $this.wrapper.removeClass('layout-menu-overlay-active layout-menu-static-active');
+                $this.disableModal();
+            }
 
             if($this.topbarItems.hasClass('topbar-items-visible')) {
                 $this.topbarItems.addClass('fadeOutUp');
@@ -108,26 +95,7 @@ PrimeFaces.widget.Ultima = PrimeFaces.widget.BaseWidget.extend({
                 $this.topbarItems.addClass('topbar-items-visible fadeInDown');
             }
             
-            $this.rightPanel.removeClass('layout-rightpanel-active');
-            $this.rightPanelButton.removeClass('rightpanel-btn-active');
-            
             e.preventDefault();
-        });
-        
-        this.rightPanelButton.on('click', function(e) {
-            $this.rightPanelButtonClick = true;
-            $this.rightPanel.toggleClass('layout-rightpanel-active');
-            $this.closeOverlayMenu();
-            
-            if($this.rightPanel.hasClass('layout-rightpanel-active')) {
-                $this.rightPanel.find('.nano').nanoScroller({flash:true});
-            }
-            
-            e.preventDefault();
-        });
-        
-        this.rightPanel.on('click', function(e) {
-            $this.rightPanelClick = true;
         });
         
         this.menulinks.off('click').on('click', function(e) {
@@ -139,64 +107,36 @@ PrimeFaces.widget.Ultima = PrimeFaces.widget.BaseWidget.extend({
             if(horizontal) {
                 $this.horizontalMenuClick = true;
             }
-            
-            if($this.isSlim() && item.parent().hasClass('ultima-menu')) {
-                if(item.hasClass('active-menuitem')) {
-                    if(submenu.length) {
-                        $this.removeMenuitem(item.attr('id'));
-                        item.removeClass('active-menuitem');
+                                     
+            if(item.hasClass('active-menuitem')) {
+                if(submenu.length) {
+                    $this.removeMenuitem(item.attr('id'));
+                    item.removeClass('active-menuitem');
+                    
+                    if(horizontal) {
+                        if(item.parent().is($this.jq)) {
+                            $this.menuActive = false;
+                        }
+                        
                         submenu.hide();
                     }
-                }
-                else {
-                    item.addClass('active-menuitem');
-                    $this.addMenuitem(item.attr('id'));
-                    $this.deactivateItems(item.siblings(), false);
-                    $this.profileMenu.css('display', 'none');
-                    submenu.show();
-
-                    $this.updateSubPosOnSlimMenu(submenu, item);
+                    else {
+                        submenu.slideUp();
+                    }
                 }
             }
             else {
-                if(item.hasClass('active-menuitem')) {
-                    if(submenu.length) {
-                        $this.removeMenuitem(item.attr('id'));
-                        item.removeClass('active-menuitem');
-                        
-                        if(horizontal) {
-                            if(item.parent().is($this.jq)) {
-                                $this.menuActive = false;
-                            }
-                            
-                            submenu.hide();
-                        }
-                        else {
-                            submenu.slideUp();
-                        }
-                    }
+                $this.addMenuitem(item.attr('id'));
+                
+                if(horizontal) {
+                    $this.deactivateItems(item.siblings());
+                    item.addClass('active-menuitem');
+                    $this.menuActive = true;
+                    submenu.show();
                 }
                 else {
-                    $this.addMenuitem(item.attr('id'));
-                    
-                    if(horizontal) {
-                        $this.deactivateItems(item.siblings());
-                        item.addClass('active-menuitem');
-                        $this.menuActive = true;
-                        submenu.show();
-                    }
-                    else {
-                        $this.deactivateItems(item.siblings(), true);
-                        $this.profileMenu.css('display', 'none');
-                        $this.activate(item);
-                    }
-                }
-                
-                if($this.isSlim()) {
-                    var activeParentItem = submenu.parents('.active-menuitem:last');
-                    setTimeout(function() {
-                        $this.updateSubPosOnSlimMenu(activeParentItem.children('ul'), activeParentItem);
-                    }, 350);
+                    $this.deactivateItems(item.siblings(), true);
+                    $this.activate(item);
                 }
             }
             
@@ -232,14 +172,7 @@ PrimeFaces.widget.Ultima = PrimeFaces.widget.BaseWidget.extend({
             var profile = $this.profileMenu.prev('.profile'),
             expanded = profile.hasClass('profile-expanded');
             
-            if($this.isSlim()) {
-                $this.deactivateItems($this.menu.children('.active-menuitem'), false);
-                $this.profileMenu.toggle();
-            }
-            else {
-                $this.profileMenu.slideToggle();
-            }
-            
+            $this.profileMenu.slideToggle();
             $this.profileMenu.prev('.profile').toggleClass('profile-expanded');
             $this.setInlineProfileState(!expanded);
             
@@ -258,7 +191,11 @@ PrimeFaces.widget.Ultima = PrimeFaces.widget.BaseWidget.extend({
             $this.topbarLinkClick = true;
 
             item.siblings('.active-top-menu').removeClass('active-top-menu');
-            $this.closeOverlayMenu();
+            if($this.wrapper.hasClass('layout-menu-overlay-active')) {
+                $this.menuButton.removeClass('menu-button-rotate');
+                $this.wrapper.removeClass('layout-menu-overlay-active');
+                $this.disableModal();
+            }
 
             if($this.isDesktop()) {
                 if(submenu.length) {
@@ -299,51 +236,14 @@ PrimeFaces.widget.Ultima = PrimeFaces.widget.BaseWidget.extend({
                 $this.topbarItems.find('.active-top-menu').removeClass('active-top-menu');
             }
             
-            if(!$this.menuClick && $this.isSlim()) {
-                $this.deactivateItems($this.menu.children('.active-menuitem'), false);
-                $this.profileMenu.css('display', 'none');
-            }
-            
-            if(!$this.rightPanelClick && !$this.rightPanelButtonClick && $this.rightPanel.hasClass('layout-rightpanel-active')) {
-                $this.rightPanel.removeClass('layout-rightpanel-active');
-                $this.rightPanelButton.removeClass('rightpanel-btn-active');
-            }
-            
             if(!$this.topbarMenuClick && !$this.topbarLinkClick) {
                 $this.topbarItems.removeClass('topbar-items-visible');
             }
-                        
+            
             $this.horizontalMenuClick = false;
-            $this.menuClick = false;
-            $this.menuButtonClick = false;
             $this.topbarLinkClick = false;
             $this.topbarMenuClick = false;
-            $this.rightPanelClick = false;
-            $this.rightPanelButtonClick = false;
         });
-    },
-    
-    updateSubPosOnSlimMenu: function(submenu, item) {
-        submenu.removeClass('submenu-top');
-        
-        var win = $(window),
-        h = win.innerHeight()||$(document).height(),
-        top = item.offset().top - win.scrollTop(),
-        submenuHeight = submenu.height();
-
-        if(top + submenuHeight > h && top >= submenuHeight) {
-            submenu.addClass('submenu-top');
-        }
-    },
-    
-    closeOverlayMenu: function() {
-        var $this = this;
-        
-        if($this.wrapper.hasClass('layout-menu-overlay-active')||$this.wrapper.hasClass('layout-menu-static-active')) {
-            $this.menuButton.removeClass('menu-button-rotate');
-            $this.wrapper.removeClass('layout-menu-overlay-active layout-menu-static-active');
-            $this.disableModal();
-        }
     },
     
     activate: function(item) {
@@ -443,8 +343,6 @@ PrimeFaces.widget.Ultima = PrimeFaces.widget.BaseWidget.extend({
     restoreMenuState: function() {
         var menucookie = $.cookie('ultima_expandeditems');
         if (menucookie) {
-            this.clearActiveItems();
-            
             this.expandedMenuitems = menucookie.split(',');
             for (var i = 0; i < this.expandedMenuitems.length; i++) {
                 var id = this.expandedMenuitems[i];
@@ -467,14 +365,7 @@ PrimeFaces.widget.Ultima = PrimeFaces.widget.BaseWidget.extend({
     },
     
     enableModal: function() {
-        var $this = this;
-        var mask = $('<div class="layout-mask"></div>').on('click', function() {
-            $this.wrapper.removeClass('layout-menu-static-active');
-            $this.wrapper.removeClass('layout-menu-overlay-active');
-            $this.menuButton.removeClass('menu-button-rotate');
-            $this.disableModal();
-        });
-        this.modal = this.wrapper.append(mask).children('.layout-mask');
+        this.modal = this.wrapper.append('<div class="layout-mask"></div>').children('.layout-mask');
     },
     
     disableModal: function() {
@@ -502,10 +393,6 @@ PrimeFaces.widget.Ultima = PrimeFaces.widget.BaseWidget.extend({
         return this.wrapper.hasClass('menu-layout-horizontal');
     },
     
-    isSlim: function() {
-        return this.isDesktop() && this.wrapper.hasClass('layout-menu-slim');
-    },
-    
     isTablet: function() {
         var width = window.innerWidth;
         return width <= 1024 && width > 640;
@@ -521,16 +408,6 @@ PrimeFaces.widget.Ultima = PrimeFaces.widget.BaseWidget.extend({
     
     isMobileDevice: function() {
         return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(window.navigator.userAgent.toLowerCase());
-    },
-    
-    clearActiveItems: function() {
-        var activeItems = this.jq.find('li.active-menuitem'),
-        subContainers = activeItems.children('ul');
-
-        activeItems.removeClass('active-menuitem');
-        if(subContainers && subContainers.length) {
-            subContainers.hide();
-        }
     }
     
 });

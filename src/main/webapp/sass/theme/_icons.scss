@@ -17,8 +17,6 @@
 .ui-icon-arrowstop-1-e { @include icon-override("\e01f"); }
 .ui-icon-arrowthick-1-s { @include icon-override("\e037"); @include rotate(90deg);}
 .ui-icon-arrowthick-1-n { @include icon-override("\e037"); @include rotate(-90deg);}
-.ui-icon-arrowthick-1-w { @include icon-override("\e037"); @include rotate(180deg);}
-.ui-icon-arrowthick-1-e { @include icon-override("\e037");}
 .ui-icon-circle-triangle-e {@include icon-override("\e039"); }
 .ui-icon-circle-triangle-w {@include icon-override("\e039"); @include rotate(180deg);}
 .ui-icon-circle-triangle-s {@include icon-override("\e039"); @include rotate(90deg);}

@@ -109,3 +109,8 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+src/main/webapp/paginas/login.xhtml
+src/main/webapp/paginas/login.xhtml
+src/main/webapp/WEB-INF/footer.xhtml
+src/main/webapp/WEB-INF/menu.xhtml
+src/main/webapp/WEB-INF/template.xhtml

@@ -10,6 +10,50 @@
             <div class="ui-g-12">
                 <div class="card">
                 
+                
+                <h:form id="formCadastro">
+			<p:panel id="painel"
+				style="font-style:arial; margin-left: auto; margin-right: auto;margin-top:4%;; width:70%">
+
+				<h:panelGrid columns="4" cellpadding="5">
+
+					<h:outputText style="font-style: normal; font-family:arial; "
+						value="Nome:" />
+						
+					<p:inputText id="descricao" maxlength="50" size="30"
+						value="" required="true"
+						requiredMessage="O campo 'Nome' é obrigatório" />
+
+					<p:outputLabel for="rg" value="RG:" />
+					<p:inputMask id="rg" mask="99.999.999-9" size="14"
+						value="" required="true"
+						requiredMessage="O campo 'RG' é obrigatório" />
+
+					<p:outputLabel for="cpf" value="CPF:" />
+					<p:inputMask id="cpf" mask="999.999.999-99" size="14"
+						value="" required="true"
+						requiredMessage="O campo 'CPF' é obrigatório" />
+
+
+					<p:outputLabel for="cidade" value="Cidade:" />
+					<p:inputText id="cidade" maxlength="100" size="40"
+						value="" required="true"
+						requiredMessage="O campo 'Cidade' é obrigatório" />
+
+					<p:outputLabel for="rua" value="Rua:" />
+					<p:inputText id="rua" maxlength="100" size="30"
+						value="" required="true"
+						requiredMessage="O campo 'Rua' é obrigatório" />
+						
+						</h:panelGrid>>
+
+			</p:panel>
+
+
+		</h:form>
+                
+                
+                
                 </div>
             </div>
         </div>
